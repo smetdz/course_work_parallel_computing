@@ -1,16 +1,15 @@
-import multiprocessing
+from threading import Thread
 from pathlib import Path
 
 
 class Indexer:
     def __init__(self):
         self.index_dict = {}
-        self.count = 0
 
     @staticmethod
     def _parse_file(path: Path) -> list:
-        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '<' '>' '\\', '/']
-        text = path.read_text('utf-8')
+        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<' '>' '\\', '/']
+        text = path.read_text('utf-8').lower()
 
         for symbol in symbols:
             text = text.replace(symbol, '')
@@ -34,11 +33,41 @@ class Indexer:
 
     def create_index(self, dir_path: Path, list_of_paths: list, num_of_threads: int = 1) -> dict:
         dir_path_len = len(str(dir_path))
-        d = self._create_index_dict(list_of_paths, dir_path_len, {})
-        return d
 
-    def _merge(self):
-        pass
+        if num_of_threads - 1:
+            dicts = [dict() for _ in range(num_of_threads)]
+
+            offset = int(len(list_of_paths) / num_of_threads)
+            threads = []
+
+            for i in range(num_of_threads):
+                threads.append(Thread(target=self._create_index_dict,
+                                      args=(list_of_paths[offset * i: offset * (i + 1)], dir_path_len, dicts[i])))
+
+            for thread in threads:
+                thread.start()
+
+            for thread in threads:
+                thread.join()
+
+            self.index_dict = self._merge(dicts)
+        else:
+            self.index_dict = self._create_index_dict(list_of_paths, dir_path_len, {})
+
+        return self.index_dict
+
+    @staticmethod
+    def _merge(dicts: list) -> dict:
+        main_dict = dicts[0]
+
+        for dct in dicts[1:]:
+            for lexeme, words_ids in dct.items():
+                try:
+                    main_dict[lexeme].update(words_ids)
+                except KeyError:
+                    main_dict[lexeme] = words_ids
+
+        return main_dict
 
     def _create_index_dict(self, list_of_paths: list, dir_path_len: int, c_dict: dict):
         for path in list_of_paths:
@@ -46,7 +75,6 @@ class Indexer:
             lexemes = self._parse_file(path)
 
             for lexeme in lexemes:
-                self.count += 1
                 try:
                     c_dict[lexeme].add(file_id)
                 except KeyError:

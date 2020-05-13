@@ -12,29 +12,15 @@ def main():
     pattern = generate_path_pattern()
     paths = generate_list_of_paths(path, pattern)
 
-    # print(paths)
-    # print(len(paths))
-
     start = time.time()
 
     indexer = Indexer()
-
-    # paths = [p for p in path.rglob('*.txt')]
-
     d = indexer.create_index(path, paths)
 
     end = time.time() - start
+    print(f'{end}')
 
     print(len(d))
-
-    print(f'{end}')
-    print(f'{indexer.count}')
-
-    c = 0
-    for k, i in d.items():
-        c += len(i)
-
-    print(c)
 
 
 if __name__ == '__main__':
