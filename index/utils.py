@@ -21,6 +21,6 @@ def generate_path_pattern() -> str:
 
 def generate_list_of_paths(path: Path, pattern: str) -> list:
     len_path = len(str(path))
-    files = [file for file in path.rglob('*.txt') if re.match(pattern, str(file)[len_path:])]
+    paths = [file for file in path.rglob('*.txt') if re.match(pattern, str(file)[len_path:])]
 
-    return files
+    return paths

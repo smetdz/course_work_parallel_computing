@@ -7,14 +7,14 @@ class Indexer:
         self.index_dict = {}
 
     @staticmethod
-    def _parse_file(path: Path) -> list:
-        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<' '>' '\\', '/']
+    def _parse_file(path: Path) -> set:
+        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<' '>' '\\', '/', '*']
         text = path.read_text('utf-8').lower()
 
         for symbol in symbols:
             text = text.replace(symbol, '')
 
-        return text.split()
+        return set(text.split())
 
     @staticmethod
     def _generate_file_id(file_path: Path, dir_path_len: int) -> int:
@@ -61,11 +61,11 @@ class Indexer:
         main_dict = dicts[0]
 
         for dct in dicts[1:]:
-            for lexeme, words_ids in dct.items():
+            for lexeme, files_ids in dct.items():
                 try:
-                    main_dict[lexeme].update(words_ids)
+                    main_dict[lexeme].update(files_ids)
                 except KeyError:
-                    main_dict[lexeme] = words_ids
+                    main_dict[lexeme] = files_ids
 
         return main_dict
 
