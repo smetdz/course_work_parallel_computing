@@ -1,4 +1,5 @@
 from pathlib import Path
+from matplotlib import pyplot
 import re
 
 
@@ -24,3 +25,20 @@ def generate_list_of_paths(path: Path, pattern: str) -> list:
     paths = [file for file in path.rglob('*.txt') if re.match(pattern, str(file)[len_path:])]
 
     return paths
+
+
+def draw_results(results: list, num_of_files: int):
+    array_x = [elem[0] for elem in results]
+    array_y = [elem[1] for elem in results]
+
+    figure = pyplot.figure()
+    ax = figure.add_subplot()
+    # ax.set_xticks([num for num in range(len(array_x))])
+    # ax.set_yticks(array_y)
+    ax.set_xlabel('num of threads')
+    ax.set_ylabel('time')
+    ax.set_title(str(num_of_files), fontsize=15)
+    ax.grid(True)
+    ax.plot(array_x, array_y)
+    pyplot.show()
+
