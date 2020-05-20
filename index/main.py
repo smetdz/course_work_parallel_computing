@@ -1,7 +1,7 @@
 from pathlib import Path
 import time
 
-from utils import generate_path_pattern, generate_list_of_paths
+from utils import generate_path_pattern, generate_list_of_paths, draw_results
 from indexer import Indexer
 
 
@@ -12,15 +12,28 @@ def main():
     pattern = generate_path_pattern()
     paths = generate_list_of_paths(path, pattern)
 
-    start = time.time()
+    num_of_files = len(paths)
 
     indexer = Indexer()
-    d = indexer.create_index(path, paths)
 
-    end = time.time() - start
-    print(f'{end}')
+    results = []
+    while True:
+        num_of_threads = input('Enter num of threads or "quit" if you want to see the results: ')
 
-    print(len(d))
+        if num_of_threads == 'quit':
+            break
+
+        num_of_threads = int(num_of_threads)
+
+        start = time.time()
+        indexer.create_index(path, paths, num_of_threads)
+        end = time.time() - start
+
+        results.append((num_of_threads, end))
+
+        print(f'{end}')
+
+    draw_results(results, num_of_files)
 
 
 if __name__ == '__main__':
