@@ -1,7 +1,7 @@
 from pathlib import Path
 import time
 
-from utils import generate_path_pattern, generate_list_of_paths, draw_results
+from utils import generate_path_pattern, generate_list_of_paths, draw_results, sameness_dict_check
 from indexer import Indexer
 
 
@@ -17,6 +17,7 @@ def main():
     indexer = Indexer()
 
     results = []
+    index_dicts = []
     while True:
         num_of_threads = input('Enter num of threads or "quit" if you want to see the results: ')
 
@@ -26,7 +27,7 @@ def main():
         num_of_threads = int(num_of_threads)
 
         start = time.time()
-        indexer.create_index(path, paths, num_of_threads)
+        index_dicts.append(indexer.create_index(path, paths, num_of_threads))
         end = time.time() - start
 
         results.append((num_of_threads, end))
@@ -34,6 +35,7 @@ def main():
         print(f'{end}')
 
     draw_results(results, num_of_files)
+    print(sameness_dict_check(index_dicts))
 
 
 if __name__ == '__main__':

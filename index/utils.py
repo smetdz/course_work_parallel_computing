@@ -42,3 +42,16 @@ def draw_results(results: list, num_of_files: int):
     ax.plot(array_x, array_y)
     pyplot.show()
 
+
+def sameness_dict_check(dicts: list):
+    if len(set(list(map(len, dicts)))) != 1:
+        return False
+
+    for key, value in dicts[0].items():
+        for dct in dicts[1:]:
+            if dct[key] != value:
+                return False
+
+    return True
+
+
