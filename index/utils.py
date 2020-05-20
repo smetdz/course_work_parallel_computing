@@ -44,14 +44,13 @@ def draw_results(results: list, num_of_files: int):
 
 
 def sameness_dict_check(dicts: list):
-    if len(set(list(map(len, dicts)))) != 1:
-        return False
+    c_dict = dicts[0]
 
-    for key, value in dicts[0].items():
-        for dct in dicts[1:]:
-            if dct[key] != value:
-                return False
+    for dct in dicts[1:]:
+        if c_dict != dct:
+            return False
 
     return True
+
 
 
