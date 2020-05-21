@@ -1,11 +1,10 @@
-from pathlib import Path
 import time
 
 from indexer import Indexer
 from utils import *
 
 
-def main():
+def main() -> None:
     dir_path = 'C:/Users/Smet/Desktop/3Course/Term2/Parallel/aclImdb/aclImdb'
     path = Path(dir_path)
 

@@ -35,14 +35,14 @@ class Indexer:
         dir_path_len = len(str(dir_path))
 
         if num_of_threads - 1:
-            dicts = [dict() for _ in range(num_of_threads)]
+            dicts_list = [dict() for _ in range(num_of_threads)]
 
             offset = int(len(list_of_paths) / num_of_threads)
             threads = []
 
             for i in range(num_of_threads):
                 threads.append(Thread(target=self._create_index_dict,
-                                      args=(list_of_paths[offset * i: offset * (i + 1)], dir_path_len, dicts[i])))
+                                      args=(list_of_paths[offset * i: offset * (i + 1)], dir_path_len, dicts_list[i])))
 
             for thread in threads:
                 thread.start()
@@ -50,17 +50,17 @@ class Indexer:
             for thread in threads:
                 thread.join()
 
-            self.index_dict = self._merge(dicts)
+            self.index_dict = self._merge(dicts_list)
         else:
             self.index_dict = self._create_index_dict(list_of_paths, dir_path_len, {})
 
         return self.index_dict
 
     @staticmethod
-    def _merge(dicts: list) -> dict:
-        main_dict = dicts[0]
+    def _merge(dicts_list: list) -> dict:
+        main_dict = dicts_list[0]
 
-        for dct in dicts[1:]:
+        for dct in dicts_list[1:]:
             for lexeme, files_ids in dct.items():
                 try:
                     main_dict[lexeme].update(files_ids)
@@ -69,7 +69,7 @@ class Indexer:
 
         return main_dict
 
-    def _create_index_dict(self, list_of_paths: list, dir_path_len: int, c_dict: dict):
+    def _create_index_dict(self, list_of_paths: list, dir_path_len: int, c_dict: dict) -> dict:
         for path in list_of_paths:
             file_id = self._generate_file_id(path, dir_path_len)
             lexemes = self._parse_file(path)
