@@ -27,7 +27,7 @@ def main():
         num_of_threads = int(num_of_threads)
 
         start = time.time()
-        index_dicts.append(indexer.create_index(path, paths[:100], num_of_threads))
+        index_dicts.append(indexer.create_index(path, paths, num_of_threads))
         end = time.time() - start
 
         results.append((num_of_threads, end))
