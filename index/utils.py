@@ -1,6 +1,7 @@
 from pathlib import Path
 from matplotlib import pyplot
 import re
+import json
 
 
 def generate_path_pattern() -> str:
@@ -27,7 +28,7 @@ def generate_list_of_paths(path: Path, pattern: str) -> list:
     return paths
 
 
-def draw_results(results: list, num_of_files: int):
+def draw_results(results: list, num_of_files: int) -> None:
     array_x = [elem[0] for elem in results]
     array_y = [elem[1] for elem in results]
 
@@ -43,7 +44,7 @@ def draw_results(results: list, num_of_files: int):
     pyplot.show()
 
 
-def sameness_dict_check(dicts: list):
+def sameness_dict_check(dicts: list) -> bool:
     c_dict = dicts[0]
 
     for dct in dicts[1:]:
@@ -51,6 +52,14 @@ def sameness_dict_check(dicts: list):
             return False
 
     return True
+
+
+def write_index_to_json(index_dict: dict, path: Path = Path()) -> None:
+    for key, value in index_dict.items():
+        index_dict[key] = list(value)
+
+    c_path = Path.joinpath(path, Path('index.json'))
+    c_path.write_text(json.dumps(index_dict), encoding='utf-8')
 
 
 

@@ -1,8 +1,8 @@
 from pathlib import Path
 import time
 
-from utils import generate_path_pattern, generate_list_of_paths, draw_results, sameness_dict_check
 from indexer import Indexer
+from utils import *
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
         num_of_threads = int(num_of_threads)
 
         start = time.time()
-        index_dicts.append(indexer.create_index(path, paths, num_of_threads))
+        index_dicts.append(indexer.create_index(path, paths[:100], num_of_threads))
         end = time.time() - start
 
         results.append((num_of_threads, end))
@@ -36,6 +36,8 @@ def main():
 
     draw_results(results, num_of_files)
     print(sameness_dict_check(index_dicts))
+
+    write_index_to_json(index_dicts[0])
 
 
 if __name__ == '__main__':
