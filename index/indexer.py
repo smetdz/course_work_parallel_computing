@@ -8,7 +8,7 @@ class Indexer:
 
     @staticmethod
     def _parse_file(path: Path) -> set:
-        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<' '>' '\\', '/', '*']
+        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<' '>' '\\', '/', '*', '"']
         text = path.read_text('utf-8').lower()
 
         for symbol in symbols:

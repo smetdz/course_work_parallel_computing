@@ -41,6 +41,7 @@ def draw_results(results: list, num_of_files: int) -> None:
     ax.set_title(str(num_of_files), fontsize=15)
     ax.grid(True)
     ax.plot(array_x, array_y)
+    ax.plot(array_x, array_y, 'ro', color='r')
     pyplot.show()
 
 
