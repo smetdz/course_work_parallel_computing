@@ -1,5 +1,6 @@
 from threading import Thread
 from pathlib import Path
+from math import ceil
 
 
 class Indexer:
@@ -37,7 +38,7 @@ class Indexer:
         if num_of_threads - 1:
             dicts_list = [dict() for _ in range(num_of_threads)]
 
-            offset = int(len(list_of_paths) / num_of_threads)
+            offset = int(ceil(len(list_of_paths) / num_of_threads))
             threads = []
 
             for i in range(num_of_threads):
