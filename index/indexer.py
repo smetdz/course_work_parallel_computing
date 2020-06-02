@@ -1,4 +1,4 @@
-from threading import Thread
+import multiprocessing as mlp
 from pathlib import Path
 
 
@@ -35,32 +35,38 @@ class Indexer:
         dir_path_len = len(str(dir_path))
 
         if num_of_threads - 1:
-            dicts_list = [dict() for _ in range(num_of_threads)]
+            dicts_queue = mlp.Queue()
 
             offset = int(len(list_of_paths) / num_of_threads)
             threads = []
 
             for i in range(num_of_threads):
-                threads.append(Thread(target=self._create_index_dict,
-                                      args=(list_of_paths[offset * i: offset * (i + 1)], dir_path_len, dicts_list[i])))
+                threads.append(mlp.Process(target=self._mlp_create_index_dict,
+                                           args=(list_of_paths[offset * i: offset * (i + 1)],
+                                                 dir_path_len, dicts_queue)))
 
             for thread in threads:
                 thread.start()
 
             for thread in threads:
-                thread.join()
+                thread.join(timeout=0.01)
 
-            self.index_dict = self._merge(dicts_list)
+            self.index_dict = self._merge(dicts_queue, num_of_threads)
         else:
             self.index_dict = self._create_index_dict(list_of_paths, dir_path_len, {})
 
         return self.index_dict
 
-    @staticmethod
-    def _merge(dicts_list: list) -> dict:
-        main_dict = dicts_list[0]
+    def _mlp_create_index_dict(self, list_of_path: list, dir_path_len: int, c_queue: mlp.Queue) -> None:
+        dct = self._create_index_dict(list_of_path, dir_path_len, {})
+        c_queue.put(dct)
 
-        for dct in dicts_list[1:]:
+    @staticmethod
+    def _merge(dicts_queue: mlp.Queue, num_of_threads: int) -> dict:
+        main_dict = dicts_queue.get()
+
+        for _ in range(num_of_threads - 1):
+            dct = dicts_queue.get()
             for lexeme, files_ids in dct.items():
                 try:
                     main_dict[lexeme].update(files_ids)
