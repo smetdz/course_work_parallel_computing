@@ -31,10 +31,10 @@ def main() -> None:
 
         results.append((num_of_threads, end))
 
-        print(f'{end}')
+        print(f'Time for {num_of_threads} threads: {end}')
 
     draw_results(results, num_of_files)
-    print(sameness_dict_check(index_dicts))
+    print('Sameness check: ', sameness_dict_check(index_dicts))
 
     write_index_to_json(index_dicts[0])
 
