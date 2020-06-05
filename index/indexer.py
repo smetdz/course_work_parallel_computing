@@ -18,14 +18,13 @@ class Indexer:
 
     @staticmethod
     def _string_conversion(message: str) -> list:
-        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<', '>', '\\', '/', '*', '"']
+        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<', '>', '\\', '/', '*', '"', '\'']
 
         for symbol in symbols:
             message = message.replace(symbol, '')
 
         return message.split()
 
-    # @staticmethod
     def _parse_file(self, path: Path) -> set:
         text = path.read_text('utf-8').lower()
         text = self._string_conversion(text)
