@@ -6,29 +6,37 @@ from math import ceil
 class Indexer:
     def __init__(self):
         self.index_dict = {}
-
-    @staticmethod
-    def _parse_file(path: Path) -> set:
-        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<' '>' '\\', '/', '*']
-        text = path.read_text('utf-8').lower()
-
-        for symbol in symbols:
-            text = text.replace(symbol, '')
-
-        return set(text.split())
-
-    @staticmethod
-    def _generate_file_id(file_path: Path, dir_path_len: int) -> int:
-        match_dict = {
+        self.match_dict = {
             'test': '1',
             'train': '2',
-            'neg': '1',
-            'pos': '2',
-            'unsup': '3',
+            'neg': '3',
+            'pos': '4',
+            'unsup': '5',
         }
 
+        self.reversed_match_dict = {item: key for key, item in self.match_dict.items()}
+
+    @staticmethod
+    def _string_conversion(message: str) -> list:
+        symbols = ['.', ',', ';', '(', ')', '[', ']', ':', '?', '!', '<', '>', '\\', '/', '*', '"']
+
+        for symbol in symbols:
+            message = message.replace(symbol, '')
+
+        return message.split()
+
+    # @staticmethod
+    def _parse_file(self, path: Path) -> set:
+        text = path.read_text('utf-8').lower()
+        text = self._string_conversion(text)
+
+        return set(text)
+
+    def _generate_file_id(self, file_path: Path, dir_path_len: int) -> int:
+        match_dict = self.match_dict
+
         d1, d2, file_name = str(file_path)[dir_path_len + 1:].split('\\')
-        file_id = match_dict[d1] + match_dict[d2] + file_name.split('_')[0]
+        file_id = match_dict[d1] + match_dict[d2] + file_name.split('_')[0] + file_name.split('_')[1][0]
 
         return int(file_id)
 
@@ -88,3 +96,27 @@ class Indexer:
                     c_dict[lexeme] = {file_id, }
 
         return c_dict
+
+    def _from_id_to_filename(self, path_id: int) -> str:
+        mh_dct = self.reversed_match_dict
+
+        str_id = str(path_id)
+        return '\\'.join([mh_dct[str_id[0]], mh_dct[str_id[1]], str_id[2:-1] + '_' + str_id[-1] + '.txt'])
+
+    def find_files(self, message: str) -> list:
+        c_msg = self._string_conversion(message.lower())
+
+        paths_ids = set()
+
+        for word in c_msg:
+            try:
+                if not len(paths_ids):
+                    paths_ids = self.index_dict[word]
+                else:
+                    paths_ids &= self.index_dict[word]
+            except KeyError:
+                continue
+
+        paths = list(map(self._from_id_to_filename, paths_ids))
+
+        return paths

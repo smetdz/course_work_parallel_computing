@@ -36,6 +36,8 @@ def main() -> None:
     draw_results(results, num_of_files)
     print('Sameness check: ', sameness_dict_check(index_dicts))
 
+    print(indexer.find_files('then for'))
+
     write_index_to_json(index_dicts[0])
 
 
